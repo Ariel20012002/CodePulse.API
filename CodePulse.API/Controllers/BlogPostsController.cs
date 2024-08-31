@@ -1,0 +1,58 @@
+﻿using Azure.Core;
+using CodePulse.API.Models.Domain;
+using CodePulse.API.Models.DTO;
+using CodePulse.API.Repositories.Interface;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace CodePulse.API.Controllers
+{
+    // https://localhost:xxxx/api/blogposts
+    [Route("api/[controller]")]
+    [ApiController]
+    public class BlogPostsController : ControllerBase
+    {
+        private readonly IBlogPostRepository blogPostRepository;
+
+        public BlogPostsController(IBlogPostRepository blogPostRepository)
+        {
+            this.blogPostRepository = blogPostRepository;
+        }
+
+        // POST: {apibaseurl}/api/blogposts
+        [HttpPost]
+        public async Task<IActionResult> CreateBlogPost([FromBody] CreateBlogPostRequestDto request)
+        {
+            // Convertir DTO al Dominio
+            var blogPost = new BlogPost
+            {
+                Title = request.Title,
+                ShortDescription = request.ShortDescription,
+                Content = request.Content,
+                FeaturedImageUrl = request.FeaturedImageUrl,
+                UrlHandle = request.UrlHandle,
+                PublishedDate = request.PublishedDate,
+                Author = request.Author,
+                IsVisible = request.IsVisible
+            };
+
+            blogPost = await blogPostRepository.CreateAsync(blogPost);
+
+            // Convertir Modelo Dominio de vuelta a DTO
+            var response = new BlogPostDto
+            {
+                Id = blogPost.Id,
+                Author = blogPost.Author,
+                Content = blogPost.Content,
+                FeaturedImageUrl = blogPost.FeaturedImageUrl,
+                IsVisible = blogPost.IsVisible,
+                PublishedDate = blogPost.PublishedDate,
+                ShortDescription = blogPost.ShortDescription,
+                Title = blogPost.Title,
+                UrlHandle = blogPost.UrlHandle
+            };
+
+            return Ok(response);
+        }
+    }
+}
