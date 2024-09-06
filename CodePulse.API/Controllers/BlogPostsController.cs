@@ -42,6 +42,10 @@ namespace CodePulse.API.Controllers
             foreach (var categoryGuid in request.Categories)
             {
                 var existingCategory = await categoryRepository.GetById(categoryGuid);
+                if (existingCategory is not null)
+                {
+                    blogPost.Categories.Add(existingCategory);
+                }
             }
 
             blogPost = await blogPostRepository.CreateAsync(blogPost);
@@ -57,7 +61,13 @@ namespace CodePulse.API.Controllers
                 PublishedDate = blogPost.PublishedDate,
                 ShortDescription = blogPost.ShortDescription,
                 Title = blogPost.Title,
-                UrlHandle = blogPost.UrlHandle
+                UrlHandle = blogPost.UrlHandle,
+                Categories = blogPost.Categories.Select(x => new CategoryDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    UrlHandle = x.UrlHandle,
+                }).ToList()
             };
 
             return Ok(response);
@@ -83,7 +93,13 @@ namespace CodePulse.API.Controllers
                     PublishedDate = blogPost.PublishedDate,
                     ShortDescription = blogPost.ShortDescription,
                     Title = blogPost.Title,
-                    UrlHandle = blogPost.UrlHandle
+                    UrlHandle = blogPost.UrlHandle,
+                    Categories = blogPost.Categories.Select(x => new CategoryDto
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        UrlHandle = x.UrlHandle,
+                    }).ToList()
                 });
             }
 
