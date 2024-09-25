@@ -22,7 +22,7 @@ namespace CodePulse.API.Controllers
 
         // POST: https://localhost:7285/api/categories
         [HttpPost]
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequestDto request)
         {
             // Map DTO to Domain Model
@@ -45,11 +45,11 @@ namespace CodePulse.API.Controllers
             return Ok(response);
         }
 
-        // GET: https://localhost:7285/api/Categories
+        // GET: https://localhost:7285/api/Categories?query=html
         [HttpGet]
-        public async Task<IActionResult> GetAllCategories()
+        public async Task<IActionResult> GetAllCategories([FromQuery] string? query)
         {
-            var categories = await categoryRepository.GetAllAsync();
+            var categories = await categoryRepository.GetAllAsync(query);
 
             // Map Domain model to DTO
 
